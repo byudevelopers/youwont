@@ -20,7 +20,6 @@ func (handler *Handler) CreateUser(c *echo.Context) error {
 		return c.JSON(400, map[string]string{"error": "Bad request"})
 	}
 
-	// Extract user data from the Supabase hook payload
 	if u.Record != nil {
 		u.ID = u.Record.ID
 		u.Email = u.Record.Email
@@ -33,6 +32,5 @@ func (handler *Handler) CreateUser(c *echo.Context) error {
 		return c.JSON(500, map[string]string{"error": err.Error()})
 	}
 
-	// Return 200 with empty object — tells Supabase to allow user creation
 	return c.JSON(200, map[string]interface{}{})
 }
