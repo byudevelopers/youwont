@@ -3,8 +3,10 @@ import { LoadingState } from '@/components/loading-state';
 import { ErrorState } from '@/components/error-state';
 import { EmptyState } from '@/components/empty-state';
 import { useNotifications, useMarkRead, useMarkAllRead } from '@/hooks/use-notifications';
+import { useAcceptInvite, useDeclineInvite } from '@/hooks/use-invites';
 import { useRouter } from 'expo-router';
 import {
+    Alert,
     FlatList,
     SafeAreaView,
     StyleSheet,
@@ -18,6 +20,8 @@ export default function NotificationsScreen() {
     const { data, isLoading, error, refetch } = useNotifications();
     const markRead = useMarkRead();
     const markAllRead = useMarkAllRead();
+    const acceptInvite = useAcceptInvite();
+    const declineInvite = useDeclineInvite();
 
     const notifications = data?.notifications ?? [];
 
@@ -76,11 +80,12 @@ export default function NotificationsScreen() {
                     contentContainerStyle={styles.listContent}
                     renderItem={({ item }) => {
                         const config = notifIcons[item.type] ?? defaultIcon;
+                        const isInvite = item.ref_type === 'invite' && item.type === 'invite_received';
                         return (
                             <TouchableOpacity
                                 style={[styles.notifCard, !item.read && styles.notifCardUnread]}
-                                activeOpacity={0.7}
-                                onPress={() => handleTap(item)}
+                                activeOpacity={isInvite ? 1 : 0.7}
+                                onPress={() => !isInvite && handleTap(item)}
                             >
                                 <View style={[styles.notifIcon, { backgroundColor: config.bg }]}>
                                     <IconSymbol size={18} name={config.icon as any} color="#ffffff" />
@@ -88,8 +93,40 @@ export default function NotificationsScreen() {
                                 <View style={styles.notifInfo}>
                                     <Text style={styles.notifMessage}>{item.message}</Text>
                                     <Text style={styles.notifTime}>{formatTime(item.created_at)}</Text>
+                                    {isInvite && !item.read && (
+                                        <View style={styles.inviteActions}>
+                                            <TouchableOpacity
+                                                style={styles.acceptButton}
+                                                onPress={() => {
+                                                    acceptInvite.mutate(item.ref_id, {
+                                                        onSuccess: () => {
+                                                            markRead.mutate(item.id);
+                                                        },
+                                                        onError: (err) => Alert.alert('Error', err.message),
+                                                    });
+                                                }}
+                                                disabled={acceptInvite.isPending}
+                                            >
+                                                <Text style={styles.acceptButtonText}>Accept</Text>
+                                            </TouchableOpacity>
+                                            <TouchableOpacity
+                                                style={styles.declineButton}
+                                                onPress={() => {
+                                                    declineInvite.mutate(item.ref_id, {
+                                                        onSuccess: () => {
+                                                            markRead.mutate(item.id);
+                                                        },
+                                                        onError: (err) => Alert.alert('Error', err.message),
+                                                    });
+                                                }}
+                                                disabled={declineInvite.isPending}
+                                            >
+                                                <Text style={styles.declineButtonText}>Decline</Text>
+                                            </TouchableOpacity>
+                                        </View>
+                                    )}
                                 </View>
-                                {!item.read && <View style={styles.unreadDot} />}
+                                {!item.read && !isInvite && <View style={styles.unreadDot} />}
                             </TouchableOpacity>
                         );
                     }}
@@ -167,5 +204,32 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         backgroundColor: '#7c3aed',
         marginLeft: 8,
+    },
+    inviteActions: {
+        flexDirection: 'row',
+        gap: 8,
+        marginTop: 10,
+    },
+    acceptButton: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        backgroundColor: '#22c55e',
+        borderRadius: 10,
+    },
+    acceptButtonText: {
+        color: '#ffffff',
+        fontSize: 13,
+        fontWeight: '700',
+    },
+    declineButton: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        backgroundColor: '#f1f5f9',
+        borderRadius: 10,
+    },
+    declineButtonText: {
+        color: '#64748b',
+        fontSize: 13,
+        fontWeight: '700',
     },
 });

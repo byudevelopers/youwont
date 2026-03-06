@@ -5,18 +5,12 @@ import { useGroups } from '@/hooks/use-groups';
 import { useNotifications } from '@/hooks/use-notifications';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { supabase } from '../../lib/supabase';
 
 export default function HomeScreen() {
     const router = useRouter();
     const { data: me, isLoading: meLoading } = useMe();
     const { data: groups } = useGroups();
     const { data: notifData } = useNotifications();
-
-    const handleSignOut = async () => {
-        const { error } = await supabase.auth.signOut();
-        if (error) console.error(error.message);
-    };
 
     if (meLoading) return <LoadingState />;
 
@@ -54,9 +48,6 @@ export default function HomeScreen() {
                         <Text style={styles.greeting}>you<Text style={styles.greetingAccent}>wont</Text></Text>
                         <Text style={styles.subGreeting}>Welcome back, {me?.name ?? 'User'}!</Text>
                     </View>
-                    <TouchableOpacity style={styles.profileButton}>
-                        <IconSymbol size={24} name="person.crop.circle" color="#64748b" />
-                    </TouchableOpacity>
                 </View>
 
                 {/* Balance Card */}
@@ -66,7 +57,7 @@ export default function HomeScreen() {
                     <View style={styles.cardRow}>
                         <View style={styles.badge}>
                             <Text style={styles.badgeText}>
-                                {groups?.length ?? 0} groups
+                                {groups?.length ?? 0} {groups?.length === 1 ? 'group' : 'groups'}
                             </Text>
                         </View>
                     </View>
@@ -120,11 +111,6 @@ export default function HomeScreen() {
                     })
                 )}
 
-                {/* Sign Out */}
-                <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-                    <Text style={styles.signOutText}>Sign Out</Text>
-                </TouchableOpacity>
-
             </ScrollView>
         </SafeAreaView>
     );
@@ -159,14 +145,6 @@ const styles = StyleSheet.create({
     subGreeting: {
         fontSize: 14,
         color: '#64748b',
-    },
-    profileButton: {
-        padding: 8,
-        backgroundColor: '#ffffff',
-        borderRadius: 20,
-        shadowColor: '#000',
-        shadowOpacity: 0.05,
-        shadowRadius: 5,
     },
     card: {
         backgroundColor: '#7c3aed',
@@ -292,18 +270,5 @@ const styles = StyleSheet.create({
         borderRadius: 4,
         backgroundColor: '#7c3aed',
         marginLeft: 8,
-    },
-    signOutButton: {
-        marginTop: 24,
-        paddingVertical: 16,
-        borderWidth: 1,
-        borderColor: '#e2e8f0',
-        borderRadius: 12,
-        alignItems: 'center',
-    },
-    signOutText: {
-        color: '#64748b',
-        fontWeight: '600',
-        fontSize: 16,
     },
 });
