@@ -1,8 +1,9 @@
 import 'react-native-url-polyfill/auto';
 import * as SecureStore from 'expo-secure-store';
+import { Platform } from 'react-native';
 import { createClient } from '@supabase/supabase-js';
 
-// SecureStore adapter for Supabase persistence
+// SecureStore adapter for Supabase persistence (native only)
 const ExpoSecureStoreAdapter = {
     getItem: (key: string) => {
         return SecureStore.getItemAsync(key);
@@ -20,7 +21,7 @@ const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYm
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     auth: {
-        storage: ExpoSecureStoreAdapter,
+        storage: Platform.OS === 'web' ? undefined : ExpoSecureStoreAdapter,
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: false,

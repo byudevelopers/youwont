@@ -3,49 +3,113 @@ package main
 import (
 	"context"
 	"log"
-	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
+	"github.com/labstack/echo/v5"
+	echoSwagger "github.com/swaggo/echo-swagger"
+
+	"youwont.api/internal/config"
 	"youwont.api/internal/handler"
+	"youwont.api/internal/middleware"
 	"youwont.api/internal/repository"
 	"youwont.api/internal/service"
 
-	"github.com/joho/godotenv"
-	"github.com/labstack/echo/v5"
-	//"github.com/labstack/echo/v5/middleware"
+	_ "youwont.api/docs"
 )
 
+// @title youwont API
+// @version 1.0
+// @description Social prediction betting API — create groups, place bets, resolve outcomes.
+
+// @host localhost:8080
+// @BasePath /
+
+// @securityDefinitions.apikey BearerAuth
+// @in header
+// @name Authorization
+// @description Enter your Supabase JWT token with the "Bearer " prefix.
+
 func main() {
-    godotenv.Load()
+	cfg := config.Load()
 
-    client := connectMongo()
-    db := client.Database("youwont")
+	client := connectMongo(cfg.MongoURI)
+	db := client.Database(cfg.MongoDB)
 
-    repo := repository.NewRepository(db)
-    service := service.NewService(repo)
-    handler := handler.NewHandler(service)
+	// Repositories
+	userRepo := repository.NewUserRepo(db)
+	groupRepo := repository.NewGroupRepo(db)
+	betRepo := repository.NewBetRepo(db)
+	inviteRepo := repository.NewInviteRepo(db)
+	notifRepo := repository.NewNotificationRepo(db)
 
-    e := echo.New()
-    e.POST("/users", handler.CreateUser)
+	// Services
+	userSvc := service.NewUserService(userRepo, cfg.StartingPoints)
+	groupSvc := service.NewGroupService(groupRepo, betRepo)
+	betSvc := service.NewBetService(betRepo, userRepo, groupRepo, notifRepo, client, cfg.MinWager)
+	inviteSvc := service.NewInviteService(inviteRepo, groupRepo, notifRepo, client)
+	notifSvc := service.NewNotificationService(notifRepo)
 
-    port := os.Getenv("PORT")
-    if port == "" {
-        port = "8080"
-    }
-    e.Start(":" + port)
+	// Auth middleware
+	auth := middleware.NewAuth(cfg.SupabaseJWTSecret, userSvc)
+
+	// Handlers
+	userH := handler.NewUserHandler(userSvc, auth)
+	groupH := handler.NewGroupHandler(groupSvc)
+	betH := handler.NewBetHandler(betSvc)
+	inviteH := handler.NewInviteHandler(inviteSvc)
+	notifH := handler.NewNotificationHandler(notifSvc)
+
+	// Router
+	e := echo.New()
+
+	// Public endpoint
+	e.POST("/users", userH.Create)
+
+	// Protected endpoints
+	api := e.Group("", auth.Required)
+
+	// Users
+	api.GET("/users/me", userH.Me)
+	api.GET("/users/search", userH.Search)
+
+	// Groups
+	api.POST("/groups", groupH.Create)
+	api.GET("/groups", groupH.List)
+	api.GET("/groups/:id", groupH.Get)
+	api.POST("/groups/join", groupH.JoinByCode)
+
+	// Invites
+	api.POST("/groups/:id/invites", inviteH.Send)
+	api.GET("/invites", inviteH.ListMine)
+	api.POST("/invites/:id/accept", inviteH.Accept)
+	api.POST("/invites/:id/decline", inviteH.Decline)
+
+	// Notifications
+	api.GET("/notifications", notifH.List)
+	api.GET("/notifications/unread-count", notifH.UnreadCount)
+	api.POST("/notifications/:id/read", notifH.MarkRead)
+	api.POST("/notifications/read-all", notifH.MarkAllRead)
+
+	// Bets
+	api.GET("/groups/:id/bets", betH.ListByGroup)
+	api.POST("/groups/:id/bets", betH.Create)
+	api.GET("/bets/:id", betH.Get)
+	api.POST("/bets/:id/wagers", betH.PlaceWager)
+	api.PUT("/bets/:id/decider", betH.ChangeDecider)
+	api.POST("/bets/:id/resolve", betH.Resolve)
+
+	// Swagger docs
+	e.GET("/swagger/*", echoSwagger.WrapHandler)
+
+	log.Fatal(e.Start(":" + cfg.Port))
 }
 
-func connectMongo() *mongo.Client {
+func connectMongo(uri string) *mongo.Client {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-
-	uri := os.Getenv("MONGODB_URI")
-	if uri == "" {
-		log.Fatal("MONGODB_URI environment variable is not set")
-	}
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(uri))
 	if err != nil {

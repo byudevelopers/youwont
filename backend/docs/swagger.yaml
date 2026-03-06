@@ -1,0 +1,1018 @@
+basePath: /
+definitions:
+  handler.BetListResponse:
+    properties:
+      bets:
+        items: {}
+        type: array
+    type: object
+  handler.ChangeDeciderRequest:
+    properties:
+      decider_id:
+        example: 665b1a2b3c4d5e6f7a8b9c0d
+        type: string
+    type: object
+  handler.CreateBetRequest:
+    properties:
+      decider_id:
+        example: 665b1a2b3c4d5e6f7a8b9c0d
+        type: string
+      description:
+        example: Sam has lived in Provo for 2 years...
+        type: string
+      end_date:
+        example: "2026-04-01T23:59:59Z"
+        type: string
+      opening_wager:
+        $ref: '#/definitions/handler.OpeningWagerRequest'
+      title:
+        example: Sam won't hike the Y before spring
+        type: string
+    type: object
+  handler.CreateGroupRequest:
+    properties:
+      description:
+        example: Our main friend group.
+        type: string
+      name:
+        example: The Squad
+        type: string
+    type: object
+  handler.CreateUserRequest:
+    properties:
+      name:
+        example: Sam
+        type: string
+      username:
+        example: sam
+        type: string
+    type: object
+  handler.ErrorDetail:
+    properties:
+      code:
+        example: NOT_FOUND
+        type: string
+      message:
+        example: not found
+        type: string
+    type: object
+  handler.ErrorResponse:
+    properties:
+      error:
+        $ref: '#/definitions/handler.ErrorDetail'
+    type: object
+  handler.GroupListResponse:
+    properties:
+      groups:
+        items: {}
+        type: array
+    type: object
+  handler.InviteAcceptResponse:
+    properties:
+      group_id:
+        example: 665c1a2b3c4d5e6f7a8b9c0d
+        type: string
+      id:
+        example: 665d1a2b3c4d5e6f7a8b9c0d
+        type: string
+      status:
+        example: ACCEPTED
+        type: string
+    type: object
+  handler.InviteDeclineResponse:
+    properties:
+      id:
+        example: 665d1a2b3c4d5e6f7a8b9c0d
+        type: string
+      status:
+        example: DECLINED
+        type: string
+    type: object
+  handler.InviteListResponse:
+    properties:
+      invites:
+        items: {}
+        type: array
+    type: object
+  handler.JoinByCodeRequest:
+    properties:
+      invite_code:
+        example: XK9F2M
+        type: string
+    type: object
+  handler.MarkAllReadResponse:
+    properties:
+      updated:
+        example: 3
+        type: integer
+    type: object
+  handler.MarkReadResponse:
+    properties:
+      id:
+        example: 665e1a2b3c4d5e6f7a8b9c0d
+        type: string
+      read:
+        example: true
+        type: boolean
+    type: object
+  handler.NotificationListResponse:
+    properties:
+      has_more:
+        example: true
+        type: boolean
+      notifications:
+        items: {}
+        type: array
+    type: object
+  handler.OpeningWagerRequest:
+    properties:
+      amount:
+        example: 100
+        type: integer
+      side:
+        enum:
+        - FOR
+        - AGAINST
+        example: FOR
+        type: string
+    type: object
+  handler.PayoutEntry:
+    properties:
+      amount:
+        example: 175
+        type: integer
+      name:
+        example: Sam
+        type: string
+      net:
+        example: 75
+        type: integer
+      user_id:
+        example: 665a1a2b3c4d5e6f7a8b9c0d
+        type: string
+    type: object
+  handler.PlaceWagerRequest:
+    properties:
+      amount:
+        example: 200
+        type: integer
+      side:
+        enum:
+        - FOR
+        - AGAINST
+        example: AGAINST
+        type: string
+    type: object
+  handler.ResolveRequest:
+    properties:
+      winning_side:
+        enum:
+        - FOR
+        - AGAINST
+        example: FOR
+        type: string
+    type: object
+  handler.ResolveResponse:
+    properties:
+      id:
+        example: 665f1a2b3c4d5e6f7a8b9c0d
+        type: string
+      payouts:
+        items:
+          $ref: '#/definitions/handler.PayoutEntry'
+        type: array
+      resolved_at:
+        example: "2026-04-02T15:30:00Z"
+        type: string
+      status:
+        example: RESOLVED
+        type: string
+      winning_side:
+        example: FOR
+        type: string
+    type: object
+  handler.SendInviteRequest:
+    properties:
+      user_id:
+        example: 665b1a2b3c4d5e6f7a8b9c0d
+        type: string
+    type: object
+  handler.UnreadCountResponse:
+    properties:
+      count:
+        example: 3
+        type: integer
+    type: object
+  handler.UserSearchResponse:
+    properties:
+      users:
+        items:
+          $ref: '#/definitions/handler.UserSearchResult'
+        type: array
+    type: object
+  handler.UserSearchResult:
+    properties:
+      avatar_url:
+        type: string
+      id:
+        example: 665a1a2b3c4d5e6f7a8b9c0d
+        type: string
+      name:
+        example: Orion
+        type: string
+      username:
+        example: orion
+        type: string
+    type: object
+  model.Bet:
+    properties:
+      created_at:
+        type: string
+      creator_id:
+        type: string
+      decider_id:
+        type: string
+      description:
+        type: string
+      end_date:
+        type: string
+      group_id:
+        type: string
+      id:
+        type: string
+      resolved_at:
+        type: string
+      status:
+        type: string
+      title:
+        type: string
+      wagers:
+        items:
+          $ref: '#/definitions/model.Wager'
+        type: array
+      winning_side:
+        type: string
+    type: object
+  model.Group:
+    properties:
+      created_at:
+        type: string
+      created_by:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      invite_code:
+        type: string
+      members:
+        items:
+          $ref: '#/definitions/model.Member'
+        type: array
+      name:
+        type: string
+    type: object
+  model.Invite:
+    properties:
+      created_at:
+        type: string
+      group_id:
+        type: string
+      group_name:
+        type: string
+      id:
+        type: string
+      invited_by:
+        type: string
+      invited_by_name:
+        type: string
+      invitee_id:
+        type: string
+      status:
+        type: string
+    type: object
+  model.Member:
+    properties:
+      joined_at:
+        type: string
+      role:
+        type: string
+      user_id:
+        type: string
+    type: object
+  model.User:
+    properties:
+      avatar_url:
+        type: string
+      created_at:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      points:
+        type: integer
+      supabase_id:
+        type: string
+      username:
+        type: string
+    type: object
+  model.Wager:
+    properties:
+      amount:
+        type: integer
+      id:
+        type: string
+      placed_at:
+        type: string
+      side:
+        type: string
+      user_id:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: Social prediction betting API — create groups, place bets, resolve
+    outcomes.
+  title: youwont API
+  version: "1.0"
+paths:
+  /bets/{id}:
+    get:
+      description: Returns full bet detail including all wagers. Requires membership
+        in the bet's group.
+      parameters:
+      - description: Bet ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Bet'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get bet detail
+      tags:
+      - bets
+  /bets/{id}/decider:
+    put:
+      consumes:
+      - application/json
+      description: Change the decider on an open bet. Only the bet creator can do
+        this. New decider must not have wagered.
+      parameters:
+      - description: Bet ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: New decider
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.ChangeDeciderRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Bet'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Change bet decider
+      tags:
+      - bets
+  /bets/{id}/resolve:
+    post:
+      consumes:
+      - application/json
+      description: Resolve an open bet by picking the winning side. Only the decider
+        can resolve. Both sides must have wagers. Points are distributed proportionally
+        and notifications are sent to all participants.
+      parameters:
+      - description: Bet ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Winning side
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.ResolveRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.ResolveResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Resolve a bet
+      tags:
+      - bets
+  /bets/{id}/wagers:
+    post:
+      consumes:
+      - application/json
+      description: Place a wager on an open bet. One wager per user per bet. Decider
+        cannot wager. Min 10 pts. Points deducted immediately.
+      parameters:
+      - description: Bet ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Wager details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.PlaceWagerRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Bet'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Place a wager
+      tags:
+      - bets
+  /groups:
+    get:
+      description: Returns all groups the authenticated user is a member of.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.GroupListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List my groups
+      tags:
+      - groups
+    post:
+      consumes:
+      - application/json
+      description: Creates a new group with the authenticated user as ADMIN. Auto-generates
+        an invite code.
+      parameters:
+      - description: Group details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CreateGroupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a group
+      tags:
+      - groups
+  /groups/{id}:
+    get:
+      description: Returns group info including members. Requires group membership.
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get group detail
+      tags:
+      - groups
+  /groups/{id}/bets:
+    get:
+      description: Returns all bets in a group, optionally filtered by status. Requires
+        group membership.
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Filter by status
+        enum:
+        - OPEN
+        - RESOLVED
+        - CANCELED
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.BetListResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List bets in a group
+      tags:
+      - bets
+    post:
+      consumes:
+      - application/json
+      description: Create a new bet with an opening wager. Creator cannot be the decider.
+        Points are deducted immediately. Notifies group members.
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Bet details with opening wager
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CreateBetRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Bet'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Create a bet
+      tags:
+      - bets
+  /groups/{id}/invites:
+    post:
+      consumes:
+      - application/json
+      description: Invite a user to a group. Sender must be a group member. Creates
+        a notification for the invitee.
+      parameters:
+      - description: Group ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: User to invite
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.SendInviteRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.Invite'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Send group invite
+      tags:
+      - invites
+  /groups/join:
+    post:
+      consumes:
+      - application/json
+      description: Join a group using its invite code. Fallback for when in-app invites
+        aren't used.
+      parameters:
+      - description: Invite code
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.JoinByCodeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Group'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Join group via invite code
+      tags:
+      - groups
+  /invites:
+    get:
+      description: Returns all pending group invites for the authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.InviteListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List my pending invites
+      tags:
+      - invites
+  /invites/{id}/accept:
+    post:
+      description: Accept a pending group invite. Adds the user to the group and notifies
+        the inviter.
+      parameters:
+      - description: Invite ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.InviteAcceptResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Accept an invite
+      tags:
+      - invites
+  /invites/{id}/decline:
+    post:
+      description: Decline a pending group invite. The user can be re-invited later.
+      parameters:
+      - description: Invite ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.InviteDeclineResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "403":
+          description: Forbidden
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Decline an invite
+      tags:
+      - invites
+  /notifications:
+    get:
+      description: Returns the authenticated user's notification feed, newest first.
+        Paginated.
+      parameters:
+      - default: 0
+        description: Page number (0-indexed)
+        in: query
+        name: page
+        type: integer
+      - default: 20
+        description: Items per page (max 50)
+        in: query
+        name: limit
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.NotificationListResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: List notifications
+      tags:
+      - notifications
+  /notifications/{id}/read:
+    post:
+      description: Marks a single notification as read.
+      parameters:
+      - description: Notification ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.MarkReadResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Mark notification as read
+      tags:
+      - notifications
+  /notifications/read-all:
+    post:
+      description: Marks all unread notifications as read for the authenticated user.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.MarkAllReadResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Mark all notifications as read
+      tags:
+      - notifications
+  /notifications/unread-count:
+    get:
+      description: Returns the number of unread notifications. Used for the bell badge.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.UnreadCountResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get unread notification count
+      tags:
+      - notifications
+  /users:
+    post:
+      consumes:
+      - application/json
+      description: Called once after Supabase signup to create the user profile in
+        MongoDB. Also supports Supabase webhook format.
+      parameters:
+      - description: User details
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/handler.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/model.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      summary: Create user profile
+      tags:
+      - users
+  /users/me:
+    get:
+      description: Returns the authenticated user's profile and point balance.
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.User'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get current user
+      tags:
+      - users
+  /users/search:
+    get:
+      description: Search for users by username prefix. Returns max 20 results. Does
+        not include point balances.
+      parameters:
+      - description: Username prefix to search for
+        in: query
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handler.UserSearchResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/handler.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Search users by username
+      tags:
+      - users
+securityDefinitions:
+  BearerAuth:
+    description: Enter your Supabase JWT token with the "Bearer " prefix.
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

@@ -26,6 +26,6 @@ jobs:
           gcloud run deploy youwont-api
           --source=./backend
           --region=us-central1
-          --set-env-vars="MONGODB_URI=${{ secrets.MONGODB_URI }}"
+          --set-env-vars="MONGODB_URI=${{ secrets.MONGODB_URI }},SUPABASE_JWT_SECRET=${{ secrets.SUPABASE_JWT_SECRET }}"
           --allow-unauthenticated
           --quiet
