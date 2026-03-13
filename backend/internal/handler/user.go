@@ -1,7 +1,10 @@
 package handler
 
 import (
+	"io"
+	"log"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v5"
 	"youwont.api/internal/middleware"
@@ -30,6 +33,11 @@ func NewUserHandler(svc *service.UserService, auth *middleware.Auth) *UserHandle
 // @Failure      409 {object} ErrorResponse
 // @Router       /users [post]
 func (h *UserHandler) Create(c *echo.Context) error {
+	// Temporary: log raw request body for webhook debugging
+	bodyBytes, _ := io.ReadAll(c.Request().Body)
+	log.Printf("POST /users raw body: %s", string(bodyBytes))
+	c.Request().Body = io.NopCloser(strings.NewReader(string(bodyBytes)))
+
 	sub, _ := h.auth.ExtractSubFromToken(c)
 
 	var body struct {

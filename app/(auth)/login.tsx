@@ -1,15 +1,15 @@
+import { supabase } from '@/lib/supabase';
 import React, { useState } from 'react';
 import {
   Alert,
-  StyleSheet,
-  View,
-  TextInput,
-  Text,
-  TouchableOpacity,
   KeyboardAvoidingView,
   Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
-import { supabase } from '@/lib/supabase';
 
 export default function Auth() {
   const [email, setEmail] = useState('');
@@ -32,6 +32,11 @@ export default function Auth() {
     const { error } = await supabase.auth.signUp({
       email: email,
       password: password,
+      options: {
+      data: {
+        test_field_yea_buddy: 'test',
+      }
+    }
     });
 
     if (error) Alert.alert('Sign Up Error', error.message);
