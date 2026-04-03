@@ -1,11 +1,12 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import * as usersApi from '@/api/users';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 export function useMe(options?: { enabled?: boolean }) {
     return useQuery({
         queryKey: ['me'],
         queryFn: () => usersApi.getMe(),
         enabled: options?.enabled ?? true,
+        retry: false,
     });
 }
 

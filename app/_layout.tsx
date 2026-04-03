@@ -2,11 +2,11 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { QueryClientProvider } from '@tanstack/react-query';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { useEffect } from 'react';
+import { ApiError } from '../api/client';
 import { AuthProvider, useSession } from '../ctx';
 import { useColorScheme } from '../hooks/use-color-scheme';
 import { useMe } from '../hooks/use-user';
 import { queryClient } from '../lib/query-client';
-import { ApiError } from '../api/client';
 
 function RootLayoutNav() {
     const { session, isLoading } = useSession();
@@ -23,10 +23,19 @@ function RootLayoutNav() {
 
         const inAuthGroup = segments[0] === '(auth)';
 
-        if (!session && !inAuthGroup) {
+        if (session) {
+            if (needsProfile) {
+                // Prevent infinite redirect if already on create-profile
+                if (segments[1] !== 'create-profile') {
+                    router.replace('/(auth)/create-profile');
+                }
+            } else if (inAuthGroup || segments.length === 0) {
+                // If they are authenticated and don't need a profile, but are on an auth screen or root, go to app
+                router.replace('/(tabs)');
+            }
+        } else if (!inAuthGroup) {
+            // Not authenticated and not in auth group, go to login
             router.replace('/(auth)/login');
-        } else if (session && inAuthGroup) {
-            router.replace('/(tabs)');
         }
     }, [session, isLoading, me, meError, meLoading, segments]);
 
