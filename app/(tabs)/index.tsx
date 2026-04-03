@@ -1,9 +1,8 @@
-import { IconSymbol } from '@/components/ui/icon-symbol';
 import { LoadingState } from '@/components/loading-state';
-import { useMe } from '@/hooks/use-user';
-import { fullName } from '@/lib/user';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { useGroups } from '@/hooks/use-groups';
 import { useNotifications } from '@/hooks/use-notifications';
+import { useMe } from '@/hooks/use-user';
 import { useRouter } from 'expo-router';
 import { SafeAreaView, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -47,7 +46,7 @@ export default function HomeScreen() {
                 <View style={styles.header}>
                     <View>
                         <Text style={styles.greeting}>you<Text style={styles.greetingAccent}>wont</Text></Text>
-                        <Text style={styles.subGreeting}>Welcome back, {me ? fullName(me) : 'User'}!</Text>
+                        <Text style={styles.subGreeting}>Welcome back, {me?.first_name || 'User'}!</Text>
                     </View>
                 </View>
 
